@@ -13,6 +13,9 @@ set "cyan=%ESCchar%[96m"
 set "white=%ESCchar%[97m"
 set "black=%ESCchar%[30m"
 
+::create save folder
+mkdir save
+
 :: update embeddable package from https://www.python.org/downloads/windows/
 set PythonURL=https://www.python.org/ftp/python/3.9.7/python-3.9.7-embed-amd64.zip
 set PythonPathFile=python39._pth
@@ -28,8 +31,8 @@ echo %cyan%
 echo AIStoryFR Installation pour Windows 64 bits
 echo -------------------------------------------
 echo.
-echo D‚sactivez votre anti-virus pour l'installation
-echo Utiliser une carte Graphique NVidia poss‚dant 8GB de VRAM si vous utilisez le mode GPU
+echo Dâ€šsactivez votre anti-virus pour l'installation
+echo Utiliser une carte Graphique NVidia possâ€šdant 8GB de VRAM si vous utilisez le mode GPU
 echo.
 :: console bell
 echo 
@@ -50,7 +53,7 @@ if %usecuda%==0 (exit) else (goto selectcuda)
 :install
 :: Create /venv/
 echo.
-echo %green%Cr‚ation de l'environnement virtuel ./venv/
+echo %green%Crâ€šation de l'environnement virtuel ./venv/
 echo.
 if not exist "./venv" mkdir venv
 
@@ -58,7 +61,7 @@ cd venv
 
 :: Download Python
 echo.
-echo %white%T‚l‚chargement de Python...%green%
+echo %white%Tâ€šlâ€šchargement de Python...%green%
 echo.
 if defined HasCurl (
   curl "%PythonURL%" -o "%cd%\python.zip"
@@ -68,7 +71,7 @@ if defined HasCurl (
 
 )
 echo.
-echo %white%T‚l‚chargement de Python t‚rmin‚.%green%
+echo %white%Tâ€šlâ€šchargement de Python tâ€šrminâ€š.%green%
 echo.
 
 :: Extract Python
@@ -81,12 +84,12 @@ if defined HasTar (
   powershell Expand-Archive python.zip ./ -Force
 )
 echo.
-echo %white%Installation de Python t‚rmin‚.%green%
+echo %white%Installation de Python tâ€šrminâ€š.%green%
 echo.
 
 :: Get pip
 echo.
-echo %white%T‚l‚chargement de Pip...%green%
+echo %white%Tâ€šlâ€šchargement de Pip...%green%
 echo.
 if defined HasCurl (
   curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
@@ -113,16 +116,16 @@ del get-pip.py
 
 cd ..
 echo.
-echo %white%Installation de Pip t‚rmin‚.%green%
+echo %white%Installation de Pip tâ€šrminâ€š.%green%
 echo.
 
 :: Install Requirements
 echo.
-echo %white%Installation des d‚pendances.%green%
+echo %white%Installation des dâ€špendances.%green%
 echo.
 %PY% -m pip --no-cache-dir install -r requirements/requirements.txt --no-color --no-warn-script-location
 echo.
-echo %white%Installation de d‚pendances t‚rmin‚.%green%
+echo %white%Installation de dâ€špendances tâ€šrminâ€š.%green%
 echo.
 :: Install Torch
 echo.
@@ -135,14 +138,14 @@ if %usecuda%==2 (
   %PY% -m pip install -r requirements/cpu_requirements.txt --no-color --no-warn-script-location
 )
 echo.
-echo %white%Instalation de Pytorch t‚rmin‚.%green%
+echo %white%Instalation de Pytorch tâ€šrminâ€š.%green%
 echo.
 :: Check for and offer to help install Windows Terminal
 for %%X in (wt.exe) do (set HasWT=%%~$PATH:X)
 if defined HasWT (goto models)
 echo.
-echo %white%Microsoft Windows Terminal n'a pas ‚t‚ trouv‚.
-echo Il est fortement recommand‚ de l'installer.
+echo %white%Microsoft Windows Terminal n'a pas â€štâ€š trouvâ€š.
+echo Il est fortement recommandâ€š de l'installer.
 echo.
 :: console bell
 echo 
@@ -168,8 +171,8 @@ if "%openwt%"=="n" (goto selectmodel) else (goto selectwt)
 :selectmodel
 echo.
 echo %yellow%
-echo 0) Installer la version du modŠle "Light" (486 Mb).
-echo 1) Installer la version du modŠle "Large" (3.81 Go) --recommand‚.
+echo 0) Installer la version du modÅ le "Light" (486 Mb).
+echo 1) Installer la version du modÅ le "Large" (3.81 Go) --recommandâ€š.
 echo.
 echo.
 echo %white%
@@ -188,36 +191,36 @@ if %usemodel%==0 (
 	if defined HasCurl (
 	
 		echo.
-		echo %white%T‚l‚chargement de: pytorch_model.bin...%green%
+		echo %white%Tâ€šlâ€šchargement de: pytorch_model.bin...%green%
 		echo.
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/pytorch_model.bin" -o models\gpt-fr-cased-small\pytorch_model.bin
-		echo %white%T‚l‚chargement de: config.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: config.json...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/config.json" -o models\gpt-fr-cased-small\config.json
-		echo %white%T‚l‚chargement de: merges.txt...%green%
+		echo %white%Tâ€šlâ€šchargement de: merges.txt...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/merges.txt" -o models\gpt-fr-cased-small\merges.txt
-		echo %white%T‚l‚chargement de special_tokens_map.json...%green%
+		echo %white%Tâ€šlâ€šchargement de special_tokens_map.json...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/special_tokens_map.json" -o models\gpt-fr-cased-small\special_tokens_map.json
-		echo %white%T‚l‚chargement de: vocab.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: vocab.json...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/vocab.json" -o models\gpt-fr-cased-small\vocab.json
 
 	) else (
 	
 		echo.
-		echo %white%T‚l‚chargement de: pytorch_model.bin...%green%
+		echo %white%Tâ€šlâ€šchargement de: pytorch_model.bin...%green%
 		echo.
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/pytorch_model.bin" -OutFile "models\gpt-fr-cased-small\pytorch_model.bin"
-		echo %white%T‚l‚chargement de: config.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: config.json...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/config.json" -OutFile "models\gpt-fr-cased-small\config.json"
-		echo %white%T‚l‚chargement de: merges.txt...%green%
+		echo %white%Tâ€šlâ€šchargement de: merges.txt...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/merges.txt" -OutFile "models\gpt-fr-cased-small\merges.txt"
-		echo %white%T‚l‚chargement de special_tokens_map.json...%green%
+		echo %white%Tâ€šlâ€šchargement de special_tokens_map.json...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/special_tokens_map.json" -OutFile "models\gpt-fr-cased-small\special_tokens_map.json"
-		echo %white%T‚l‚chargement de: vocab.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: vocab.json...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-small/resolve/main/vocab.json" -OutFile "models\gpt-fr-cased-small\vocab.json"
 	)
 
 	echo.
-	echo %white%Installation du modŠle t‚rmin‚.%green%
+	echo %white%Installation du modÅ le tâ€šrminâ€š.%green%
 	echo.
 	
 	goto end
@@ -230,33 +233,33 @@ if %usemodel%==1 (
 
 	if defined HasCurl (
 	
-		echo %white%T‚l‚chargement de: pytorch_model.bin...%green%
+		echo %white%Tâ€šlâ€šchargement de: pytorch_model.bin...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/pytorch_model.bin" -o models\gpt-fr-cased-base\pytorch_model.bin
-		echo %white%T‚l‚chargement de: config.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: config.json...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/config.json" -o models\gpt-fr-cased-base\config.json
-		echo %white%T‚l‚chargement de: merges.txt...%green%
+		echo %white%Tâ€šlâ€šchargement de: merges.txt...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/merges.txt" -o models\gpt-fr-cased-base\merges.txt
-		echo %white%T‚l‚chargement de special_tokens_map.json...%green%
+		echo %white%Tâ€šlâ€šchargement de special_tokens_map.json...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/special_tokens_map.json" -o models\gpt-fr-cased-base\special_tokens_map.json
-		echo %white%T‚l‚chargement de: vocab.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: vocab.json...%green%
 		curl -L "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/vocab.json" -o models\gpt-fr-cased-base\vocab.json
 
 	) else (
 
-		echo %white%T‚l‚chargement de: pytorch_model.bin...%green%
+		echo %white%Tâ€šlâ€šchargement de: pytorch_model.bin...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/pytorch_model.bin" -OutFile "models\gpt-fr-cased-base\pytorch_model.bin"
-		echo %white%T‚l‚chargement de: config.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: config.json...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/config.json" -OutFile "models\gpt-fr-cased-base\config.json"
-		echo %white%T‚l‚chargement de: merges.txt...%green%
+		echo %white%Tâ€šlâ€šchargement de: merges.txt...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/merges.txt" -OutFile "models\gpt-fr-cased-base\merges.txt"
-		echo %white%T‚l‚chargement de special_tokens_map.json...%green%
+		echo %white%Tâ€šlâ€šchargement de special_tokens_map.json...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/special_tokens_map.json" -OutFile "models\gpt-fr-cased-base\special_tokens_map.json"
-		echo %white%T‚l‚chargement de: vocab.json...%green%
+		echo %white%Tâ€šlâ€šchargement de: vocab.json...%green%
 		powershell Invoke-WebRequest -Uri "https://huggingface.co/asi/gpt-fr-cased-base/resolve/main/vocab.json" -OutFile "models\gpt-fr-cased-base\vocab.json"
 	)
 
 	echo.
-	echo %white%Installation du modŠle t‚rmin‚.%green%
+	echo %white%Installation du modÅ le tâ€šrminâ€š.%green%
 	echo.
 	
 	goto end
@@ -266,7 +269,7 @@ if %usemodel%==1 (
 :end
 
 echo.
-echo %yellow%L'installation est t‚rmin‚!
+echo %yellow%L'installation est tâ€šrminâ€š!
 echo Vous pouvez maintenant jouer en cliquant sur AIStoryFR.bat.%green%
 echo.
 :: console bell
