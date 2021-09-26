@@ -1,3 +1,5 @@
+#  -*- coding: utf-8 -*-
+
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from colorama import Fore, Back, Style
 from os import system
@@ -23,10 +25,14 @@ print()
 
 
 #draw init image
-fichier = open("images\init.txt", "r")
+fichier = open("images\init.txt", "r", encoding='utf8')
 print(Fore.GREEN + fichier.read())
 fichier.close()
 print()
+
+#init memory_result
+memory_result = ""
+last_input = ""
 
 def check_model():
 
@@ -184,7 +190,7 @@ def check_savegame():
         
             if os.path.isfile("save\\" + selected_savegame + ".txt"):
 
-                fichier = open("save\\" + selected_savegame + ".txt", "r")
+                fichier = open("save\\" + selected_savegame + ".txt", "r", encoding='utf8')
             
                 #recolor text
                 text_colored = fichier.read().replace("[Vous]:",Fore.MAGENTA + "[Vous]:" + Fore.WHITE)
@@ -207,12 +213,11 @@ selected_savegame = check_savegame()
 # Load pretrained model and tokenizer
 model = GPT2LMHeadModel.from_pretrained("models/" + used_model)
 tokenizer = GPT2Tokenizer.from_pretrained("models/" + used_model)
-# Generate a sample of text
 
 model.to(device)
 model.eval()
 
-def dialog_start():
+def dialog_start(memory_result, last_input):
 
     print()
     print(Fore.MAGENTA + "    [Vous]:" + Fore.WHITE)
@@ -222,18 +227,40 @@ def dialog_start():
     if bool(input_user) == False:
     
         print(Fore.RED + "    ERREUR: Veuillez écrire quelque-chose.")
-        return dialog_start()
+        return dialog_start(memory_result, last_input)
     
-    input_sentence = input_user
+    if len(last_input) == 0 or len(memory_result) == 0:
+    
+        input_sentence = input_user
+
+    else: 
+    
+        input_sentence = " " + last_input + "" + memory_result + ". " + input_user
+    
+    count_sentence = len(input_sentence)
 
     input_ids = tokenizer.encode(input_sentence, return_tensors="pt").to(device)
+    
+    count_tensor = 0
+    
+    for tokens in range(len(input_ids)):
+        
+        for tensors in range(len(input_ids[tokens])):
+        
+            count_tensor = count_tensor+1
 
-    #model.to(device)
+    count_tokens = tensors
+    lenght_add_token = 50
+    max_lenght_tokens = count_tokens + lenght_add_token
+    
+    if max_lenght_tokens > 1024:
+    
+        max_lenght_tokens = 1024
 
     beam_outputs = model.generate(
 
         input_ids,
-        max_length=100,
+        max_length = max_lenght_tokens,
         do_sample=True,
         top_k=50,
         top_p=0.95,
@@ -244,20 +271,81 @@ def dialog_start():
     print(Fore.MAGENTA + "    [Histoire]:\n" + Fore.WHITE)
     
     result_token = tokenizer.decode(beam_outputs[0], skip_special_tokens=True)
+    result_token.capitalize()
+
+    escape_input = result_token.replace(input_sentence, "")
+    last_input = input_user
+
+    ###result formatting###
     
-    escape_input = result_token.replace(input_user, "...")
+    count_token = len(escape_input)
     
-    out_text = escape_input + "..."
+    count_point_delimiter = escape_input.count(".")
+    count_interrogative_delimiter = escape_input.count("?")
+    count_exclamation_delimiter = escape_input.count("!")
+    
+    if count_point_delimiter > 0:
+    
+        last_occurence_point = escape_input.rfind(".")
+    
+    else:
+    
+        last_occurence_point = 0
+    
+    if count_interrogative_delimiter > 0:
+    
+        last_occurence_interrogative = escape_input.rfind("?")
+
+    else:
+    
+        last_occurence_interrogative = 0        
+    
+    if count_exclamation_delimiter > 0:
+    
+        last_occurence_exclamation = escape_input.rfind("!")
+
+    else:
+    
+        last_occurence_exclamation = 0
+
+            
+    if last_occurence_point > last_occurence_interrogative and last_occurence_point > last_occurence_exclamation:
+    
+        delimiter_start = last_occurence_point
+        last_ponctuation = "."
+        
+    elif last_occurence_interrogative > last_occurence_point and last_occurence_interrogative > last_occurence_exclamation:
+    
+        delimiter_start = last_occurence_interrogative
+        last_ponctuation = "?"
+        
+    elif last_occurence_exclamation > last_occurence_point and last_occurence_exclamation > last_occurence_interrogative:
+    
+        delimiter_start = last_occurence_exclamation
+        last_ponctuation = "!"
+        
+    else:
+    
+        delimiter_start = count_token
+        last_ponctuation = "."
+           
+    token_reduced = escape_input[1:delimiter_start]
+
+    #######################
+
+    memory_result = token_reduced
+    
+    out_text = token_reduced + last_ponctuation
     text_bloc = textwrap.fill(out_text,width=90,break_long_words=False,replace_whitespace=False)
     text_bloc = tr.indent(text_bloc, "    ", lambda line: True)
     print(text_bloc)
     
     #Save Story in save file
-    fichier = open("save\\" + selected_savegame + ".txt", "a")
+    fichier = open("save\\" + selected_savegame + ".txt", "a", encoding='utf8')
     fichier.write("\n\n[Vous]:\n\n" + input_user)
-    fichier.write("\n\n[Histoire]:\n\n" + escape_input)
+    fichier.write("\n\n[Histoire]:\n\n" + out_text)
     fichier.close()
 
-    return dialog_start()
+    return dialog_start(memory_result, last_input)
 
-dialog_start()
+dialog_start(memory_result, last_input)
