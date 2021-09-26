@@ -1,4 +1,7 @@
 @echo off
+
+set PYTHONIOENCODING=utf-8
+
 set PY="venv\python.exe"
 
 for %%X in (wt.exe) do (set FOUNDWT=%%~$PATH:X)
