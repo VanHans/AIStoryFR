@@ -63,6 +63,16 @@ AIStoryFR contrairement à AI Dungeon ne garde pas en mémoire le contexte. C'es
 Il serait facile de faire en sorte de garder un contexte en mémoire sous la forme d'un "prompt" cependant
 cela serait extrêmement gourmand en ressources CPU ou GPU.
 
+Cependant AIStoryFR garde en mémoire les dernieres occurences, afin d'avoir une suite cohérente.
+
+**Commencer une partie**
+
+Dans un premier temps il est nécecessaire de commencer votre histoire, l'IA a besoin "d'avoir a manger" pour générer une aventure. Il faut que l'IA puisse savoir ou se déroule l'aventure. 
+
+Voici un exemple de début d'aventure:
+
+"Nous étions depuis des semaines à la dérive sur ce navire. l'équipage commence à manquer de nourriture. Nous devons trouver une terre pour accoster."
+
 Donc, pour jouer il est conseillé à chaque fois que l'ont écrit de préciser un contexte et une action par exemple:
 
 "Je suis chez moi il est tard, je n'arrive pas à dormir, je décide de jouer à AIStoryFR"
